@@ -82,11 +82,10 @@ func server() {
 	}
 }
 
-func (a *Auction) endAuction() {
-	a.AuctionLocker.Lock()
+func endAuction() {
+	auctionLocker.Lock()
+	defer auctionLocker.Unlock()
 
-	defer a.AuctionLocker.Unlock()
-
-	//a.status = AuctionService.AuctionStatus_AUCTION_OVER
-	log.Printf("Auction ended - the winning bid was %v by %v\n!", a.Amount, highestBid.MadeBy)
+	auction.State = auctionService.AuctionState_OVER
+	log.Printf("Auction ended - the winning bid was %v by %v\n!", auction.Amount, auction.BidderId)
 }

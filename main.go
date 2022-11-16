@@ -39,6 +39,9 @@ func main() {
 	} else if *start == "client" {
 		l = log.New(file, prefix, log.Ltime)
 		client()
+	} else if *start == "frontend" {
+		l = log.New(file, prefix, log.Ltime)
+		frontend()
 	} else {
 		l.Fatalf("start not a valid value '%s' - expected one of 'client' or 'server'", *start)
 	}
