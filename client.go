@@ -95,9 +95,10 @@ func client() {
 				return
 			}
 			} */
+		case "quit":
+			return
 		}
 	}
-	return
 }
 
 // make bid multicast
