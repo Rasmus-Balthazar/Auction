@@ -1,26 +1,40 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 
 package auctionService;
 
 option go_package = "https://github.com/Rasmus-Balthazar/Auction/;auctionService";
 
 service AuctionService {
-    rpc Result (Void) returns (BidMessage);
-    rpc Bid (Amount) returns (Outcome);
+    rpc Result (google.protobuf.Empty) returns (Outcome);
+    rpc Bid (BidMessage) returns (Outcome);
+    rpc Connect (stream BidMessage) returns (stream BidMessage);
 }
 
+
+message Message {
+    uint32 pid = 1;
+    string content = 2;
+}
 
 message BidMessage {
     uint32 bidderId = 1;
     int64 bidAmount = 2; 
 }
 
-message Amount {
-    uint64 amount = 1;
-}
-
 message Outcome {
-    string outcome = 1;
+    AuctionState state = 1;
+    string amount = 2;
+    uint32 bidderId = 3;
 }
 
-message Void {}
+enum BidState {
+    SUCCESS = 0;
+    FAIL = 1;
+}
+
+enum AuctionState { 
+    OVER = 0;
+    GOING = 1;
+    FAILED = 2;
+}
