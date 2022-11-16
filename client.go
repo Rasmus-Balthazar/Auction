@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"net"
 	"os"
+	"strings"
 
 	"github.com/Rasmus-Balthazar/Auction/auctionService"
 	"google.golang.org/grpc"
@@ -76,9 +78,15 @@ func client() {
 	// Tell server our name so that it can tell everyone else
 
 	// Main loop. Handles user input and displaying new messages from the server.
-	for {
-		select {
-		/* case e := <-client.events:
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for scanner.Scan() {
+		input := strings.Split(scanner.Text(), " ")
+		switch input[0] {
+		case "bid":
+			//frondend.bid
+			/* select {
+			/* case e := <-client.events:
 			l.Printf("client event '%s'", e)
 			switch e.ID {
 			case "msg":
@@ -86,12 +94,13 @@ func client() {
 			case "quit":
 				return
 			}
-		} */
+			} */
 		}
-		return
 	}
+	return
 }
 
+// make bid multicast
 func (client *Client) Bid(bid *auctionService.BidMessage) {
 	client.stream.Send(bid)
 }
