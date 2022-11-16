@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package auctionService;
+
+option go_package = "https://github.com/Rasmus-Balthazar/Auction/;auctionService";
+
+service auctionService {
+    rpc Bid (Amount) returns (Outcome);
+    rpc Result (Void) returns (Bid);
+}
+
+
+message Bid {
+    uint32 bidderId = 1;
+    int64 bidAmount = 2; 
+}
+
+message Amount {
+    uint64 amount = 1;
+}
+
+message Outcome {
+    string outcome = 1;
+}
+
+message Void {}
