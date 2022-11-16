@@ -4,13 +4,13 @@ package auctionService;
 
 option go_package = "https://github.com/Rasmus-Balthazar/Auction/;auctionService";
 
-service auctionService {
+service AuctionService {
+    rpc Result (Void) returns (BidMessage);
     rpc Bid (Amount) returns (Outcome);
-    rpc Result (Void) returns (Bid);
 }
 
 
-message Bid {
+message BidMessage {
     uint32 bidderId = 1;
     int64 bidAmount = 2; 
 }
