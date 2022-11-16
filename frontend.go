@@ -31,7 +31,7 @@ func NewReplicationManager(pid uint32, server auctionService.AuctionService_Conn
 
 func frontend() {
 
-	listener, err := net.Listen("tcp", net.JoinHostPort("localhost", "8080"))
+	listener, err := net.Listen("tcp", net.JoinHostPort("localhost", *port))
 	if err != nil {
 		l.Fatalf("fail to listen on port %s: %v", *port, err)
 	}
