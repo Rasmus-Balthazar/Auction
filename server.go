@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 	"os"
@@ -11,17 +12,19 @@ import (
 )
 
 type ClientConnection struct {
-	stream auctionService.AuctionService_ConnectClient
+	stream auctionService.AuctionService_ConnectServer
 	pid    uint32
 	name   string
 }
 
 type Server struct {
 	auctionService.UnimplementedAuctionServiceServer
-	connections map[uint32]*ClientConnection
-	chBids      chan *auctionService.BidMessage
-	pid         uint32
-	result      auctionService.Outcome
+	connections map[uint32]*FrontEnd
+	//FrontEnd *FrontEnd
+	stream auctionService.AuctionService_ConnectServer
+	chBids chan *auctionService.BidMessage
+	pid    uint32
+	result auctionService.Outcome
 }
 
 type Auction struct {
@@ -49,7 +52,7 @@ func server() {
 	defer listener.Close()
 
 	server := &Server{
-		connections: make(map[uint32]*ClientConnection),
+		connections: make(map[uint32]*FrontEnd),
 		pid:         uint32(os.Getpid()),
 	}
 
@@ -73,10 +76,9 @@ func server() {
 		// in the order from its original context.
 		//
 		// msg.time = server.time
-
-		for _, client := range server.connections {
+		for _, fe := range server.connections {
 			// Check if this message was randomly "lost"
-			log.Print(client.name)
+			log.Print(fe.pid)
 			//client.stream.Send(msg)
 		}
 	}
@@ -88,4 +90,11 @@ func endAuction() {
 
 	auction.State = auctionService.AuctionState_OVER
 	log.Printf("Auction ended - the winning bid was %v by %v\n!", auction.Amount, auction.BidderId)
+}
+
+func (server *Server) Bid(ctx context.Context, bid *auctionService.BidMessage) (*auctionService.Outcome, error) {
+	server.chBids <- bid
+
+	highestBidder := &auction
+	return highestBidder, nil
 }
