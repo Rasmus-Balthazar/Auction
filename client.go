@@ -15,6 +15,8 @@ import (
 type Client struct {
 	pid    uint32 // use pids because we dont care to generate uuids
 	stream auctionService.AuctionService_ConnectClient
+	//frontend    *FrontEnd
+	connections map[uint32]*FrontEnd
 }
 
 func NewClient(stream auctionService.AuctionService_ConnectClient) *Client {
@@ -23,19 +25,18 @@ func NewClient(stream auctionService.AuctionService_ConnectClient) *Client {
 		stream: stream,
 	}
 
-	// Recv msgs from server in background
-	go func() {
+	/* go func() {
 		for {
-			bid, err := stream.Recv()
+			_, err := stream.Recv()
 			if err != nil {
-				l.Println(bid.BidAmount)
+				l.Println("#started")
 				l.Println("lost connection to server")
 				// Quit because there's no option to reestablish connection besides running the
 				// process again.
 				return
 			}
 		}
-	}()
+	}() */
 
 	return client
 }
@@ -46,15 +47,14 @@ func NewClient(stream auctionService.AuctionService_ConnectClient) *Client {
 // We only really need these because the requirements say clients should be able to quit.
 
 // Send handler for messages. Makes sure we remember to increment time.
-func (client *Client) Send(msg string) {
+/* func (client *Client) Send(msg string) {
 	// Check if this message was randomly "lost"
 	if Lost() {
 		return
 	}
+} */
 
-}
-
-// Recv handler for messages. Makes sure we remember to increment time.
+// Recv handler for messages
 func (client *Client) Recv(msg *auctionService.Outcome) {
 
 }
@@ -84,6 +84,7 @@ func client() {
 		input := strings.Split(scanner.Text(), " ")
 		switch input[0] {
 		case "bid":
+
 			//frondend.bid
 			/* select {
 			/* case e := <-client.events:
@@ -95,6 +96,10 @@ func client() {
 				return
 			}
 			} */
+		case "ports":
+			for fe, _ := range client.connections {
+				l.Printf("I have this connection: %d", fe)
+			}
 		case "quit":
 			return
 		}
@@ -103,5 +108,7 @@ func client() {
 
 // make bid multicast
 func (client *Client) Bid(bid *auctionService.BidMessage) {
-	client.stream.Send(bid)
+	for _, fe := range client.connections {
+		fe.Bid(context.Background(), bid)
+	}
 }
